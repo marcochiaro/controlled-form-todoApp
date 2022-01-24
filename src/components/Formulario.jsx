@@ -1,97 +1,108 @@
-import React, { Fragment, useRef, useState } from "react";
+import Swal from 'sweetalert2';
+import {v4 as uuidv4} from 'uuid';
+import { useForm } from '../Hooks/useForm';
+
+const Formulario = ({agregarTodos}) => {
+
+    const initialState = {
+        nombre: '',
+        descripcion: '',
+        estado: 'pendiente',
+        check: false
+
+    }
+
+    const [inputs, handleChange, reset] = useForm(initialState)
+
+    const {nombre, descripcion, estado, check} = inputs;
 
 
-const Formulario = () => {
 
+    const handleSubmit = (e) => {
 
-const [todo, setTodo] = useState({
-    todoName: '',
-    todoDescription: '',
-    todoState: 'pendiente',
-    todoCheck: false
-   });
-
-const formulario = useRef(null)
-
-const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(todo)
-                
-};
-
-const handleChange = (e) => {
-
-    console.log(`:> ${e.target.name}`)
-
-    const target = e.target
-
-    //puedo hacer destructuring de e.target y todas las propiedades para no seguyir escribiendo e.target.value y etc.
-
-    const {name, type, checked, value} = target;
-
-    //ahora tengo en la variable target, guardado el e.target, y luego utilice esa variable para desestructurar e.target.value y etc
-    // entonces ahora en name tengo e.target.name y etc.
-
-    setTodo({
-        ...todo,
-//En el nombre de una propiedad de un objeto no se pueden usar puntos '.' , es por uso que uso parentesis para poder
-// usar el e.target.name como nombre de la propiedad del objeto todo.
-// El e.target.name representa lo que dentro de cada etiqueta(sea input, textarea o select) esta representado como Name
-//EJ: <input name='todoName' es igual a e.target.name cuando de realiza un onchange ahi.
         
-        [name]: type === "checkbox" ? checked : value,
-       })
-}
+        //!nombre.trim() es igual que hacer nombre.lenght === 0, es decir, si se envia el form vacio, ejecuta el console.log
+        if(!nombre.trim()){
+            e.target[0].focus();
+            Swal.fire({
+                icon: 'error',
+                title: 'Field required',
+                text: 'Something went wrong!',
+                footer: '<a href="">Why do I have this issue?</a>'
+              })
+            return;
+        }
 
-return ( 
-        <Fragment>
-            <h2 >Formulario Controlado con Hooks.</h2>
-            <form ref={formulario} onSubmit={handleSubmit}>
+        if(!descripcion.trim()){
+            e.target[1].focus();
+            Swal.fire({
+                icon: 'error',
+                title: 'Field required',
+                text: 'Something went wrong!',
+                footer: '<a href="">Why do I have this issue?</a>'
+              })
+            return;
+            }
+
+        Swal.fire({
+                icon: 'success',
+                title: 'Task Added',
+                text: 'Task added succesfully!',
+                footer: '<a href="">Why do I have this issue?</a>'
+              })
+        
+              
+        
+        agregarTodos({
+            nombre,
+            descripcion,
+            estado: estado === 'pendiente' ? false : true,
+            check,
+            id: uuidv4()
+        })
+    
+        reset();
+        
+    }
+
+
+
+  return(
+        <>
+            <h3>Add Todo</h3>
+            <form onSubmit={handleSubmit}>
                 <input 
-                    name = "todoName"
-                    type="text"
-                    placeholder="Insert a todo" 
-                    className="form-control mb-2" 
-                    onChange={handleChange} 
-                    value = {todo.todoName}
+                    type="text" 
+                    name='nombre' 
+                    placeholder='Agregar un todo' 
+                    className='form-control mb-2'
+                    value={nombre}
+                    onChange={handleChange}
                 />
-                <textarea 
-                    name="todoDescription" 
-                    placeholder="Insert the todo description." 
-                    className="form-control mb-2"
-                    onChange={handleChange}
-                    value = {todo.todoDescription}
-                    />
-                <select 
-                    name="todoState"
-                    className="form-control mb-2"
-                    onChange={handleChange}
-                    value = {todo.todoState}
-                >
-                    <option value="pendiente">Pending</option>
-                    <option value="completada">Completed</option>
-
+                <textarea name="descripcion" className='form-control mb-2' placeholder='Ingrese la discripcion.' value={descripcion} onChange={handleChange}/>
+                <select name="estado" className='form-control mb-2' value={estado} onChange={handleChange}>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="completado">Completado</option>
                 </select>
-                <button type="submit" className="btn btn-primary" onSubmit={handleSubmit}>Add</button>
-
-                <div className="form-check mt-2">
+                <div className='form-check'>
                     <input 
-                        name = "todoCheck"
-                        className="form-check-input" 
+                        name='check' 
                         type="checkbox" 
-                        checked={todo.todoCheck} 
-                        id="flexCheckDefault" 
+                        className='form-check-input'
+                        id = "flexCheckDefault"
+                        checked = {check}
                         onChange={handleChange}
                     />
-                    <label className="form-check-label" htmlFor="flexCheckDefault">
-                        Give priority
+                    <label htmlFor="flexCheckDefault" className='form-check-label'>
+                        Prioritario
                     </label>
                 </div>
+                <button type="submit" className='btn btn-primary mt-2'>Agregar</button>
             </form>
-            
-        </Fragment>
-       
-     );
-}
- 
+        </> 
+        
+        ) 
+};
+
 export default Formulario;

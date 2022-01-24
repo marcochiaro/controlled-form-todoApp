@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 
 export const useForm  = (InitialState = {}) => {
@@ -7,7 +7,9 @@ export const useForm  = (InitialState = {}) => {
 
     const handleChange = (e) => {
 
-        const {name, value, checked, type} = e.target;
+        const event = e.target;
+
+        const {name, value, checked, type} = event;
 
         setInputs((old) => ({
             ...old,

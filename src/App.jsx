@@ -1,13 +1,12 @@
-import './App.css';
-import Formulario from './components/Formulario';
+import TodoList from './components/TodoList';
 
 function App() {
   return (
     
     <> 
       <div className='container m-1'>
-        <h1>TODO</h1>
-        <Formulario />
+        <h1>TO DO</h1>
+        <TodoList />
       </div>
     </>
   );
